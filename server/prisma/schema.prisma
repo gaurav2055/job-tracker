@@ -1,0 +1,118 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  jobs          Job[]
+  contacts      Contact[]
+  userCompanies UserCompany[]
+
+  @@map("users")
+}
+
+// Global entity — shared across all users
+model Company {
+  id        Int      @id @default(autoincrement())
+  name      String
+  website   String?
+  industry  String?
+  size      String?
+  location  String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  jobs          Job[]
+  contacts      Contact[]
+  userCompanies UserCompany[]
+
+  @@map("companies")
+}
+
+// Bridge: per-user relationship to a company (stores personal notes)
+model UserCompany {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  companyId Int      @map("company_id")
+  notes     String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, companyId])
+  @@map("user_companies")
+}
+
+model Job {
+  id             Int       @id @default(autoincrement())
+  userId         Int       @map("user_id")
+  companyId      Int       @map("company_id")
+  roleTitle      String    @map("role_title")
+  jobDescription String?   @map("job_description")
+  jobUrl         String?   @map("job_url")
+  salaryMin      Int?      @map("salary_min")
+  salaryMax      Int?      @map("salary_max")
+  location       String?
+  workType       String?   @map("work_type")
+  status         String    @default("To Apply")
+  fitScore       Int?      @map("fit_score")
+  dateFound      DateTime? @map("date_found")
+  dateApplied    DateTime? @map("date_applied")
+  notes          String?
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company   Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  contacts  Contact[]
+  followups Followup[]
+
+  @@map("jobs")
+}
+
+model Contact {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @map("user_id")
+  jobId       Int?     @map("job_id")
+  companyId   Int?     @map("company_id")
+  name        String
+  title       String?
+  email       String?
+  linkedinUrl String?  @map("linkedin_url")
+  notes       String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  job     Job?     @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  company Company? @relation(fields: [companyId], references: [id], onDelete: SetNull)
+
+  @@map("contacts")
+}
+
+model Followup {
+  id        Int      @id @default(autoincrement())
+  jobId     Int      @map("job_id")
+  date      DateTime
+  type      String
+  notes     String?
+  outcome   String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  job Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@map("followups")
+}
