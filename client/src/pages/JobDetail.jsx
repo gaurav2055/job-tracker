@@ -39,7 +39,7 @@ import StatusBadge from '../components/StatusBadge';
 import FitScoreBadge from '../components/FitScoreBadge';
 import dayjs from 'dayjs';
 
-const STATUSES = ['To Apply', 'Applied', 'Phone Screen', 'Take Home', 'Interviewing', 'Offer', 'Rejected'];
+const STATUSES = ['Applied', 'Phone Screen', 'Take Home', 'Interviewing', 'Offer', 'Rejected'];
 const FOLLOWUP_TYPES = ['email', 'linkedin', 'call'];
 
 const FOLLOWUP_ICONS = {

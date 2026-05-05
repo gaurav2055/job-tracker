@@ -11,7 +11,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import { createJob, updateJob } from '../api/jobs';
 import dayjs from 'dayjs';
 
-const STATUSES = ['To Apply', 'Applied', 'Phone Screen', 'Take Home', 'Interviewing', 'Offer', 'Rejected'];
+const STATUSES = ['Applied', 'Phone Screen', 'Take Home', 'Interviewing', 'Offer', 'Rejected'];
 const WORK_TYPES = ['remote', 'hybrid', 'onsite'];
 
 const EMPTY = {
@@ -24,7 +24,7 @@ const EMPTY = {
   salaryMin: '',
   salaryMax: '',
   fitScore: '',
-  status: 'To Apply',
+  status: 'Applied',
   dateFound: dayjs().format('YYYY-MM-DD'),
   dateApplied: '',
   notes: '',
