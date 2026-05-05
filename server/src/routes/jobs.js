@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.use(authenticate);
 
-const VALID_STATUSES = ['To Apply', 'Applied', 'Interviewing', 'Offer', 'Rejected'];
+const VALID_STATUSES = ['To Apply', 'Applied', 'Phone Screen', 'Take Home', 'Interviewing', 'Offer', 'Rejected'];
 const VALID_WORK_TYPES = ['remote', 'hybrid', 'onsite'];
 
 const jobValidation = [
