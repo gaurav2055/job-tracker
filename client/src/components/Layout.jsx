@@ -179,28 +179,35 @@ function SidebarContent({ location, onClose }) {
       <Divider />
 
       {/* User info + actions */}
-      <Box sx={{ px: 2, py: 2, display: 'flex', alignItems: 'center', gap: 1.5 }}>
-        <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.dark', fontSize: '0.8rem' }}>
-          {(user?.name || user?.email || '?')[0].toUpperCase()}
-        </Avatar>
-        <Box sx={{ flex: 1, minWidth: 0 }}>
-          <Typography variant="body2" fontWeight={600} noWrap>
-            {user?.name || 'Account'}
-          </Typography>
-          <Typography variant="caption" sx={{ color: 'text.secondary' }} noWrap>
-            {user?.email}
-          </Typography>
+      <Box sx={{ px: 2, py: 2 }}>
+        {/* Name + avatar row */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
+          <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.dark', fontSize: '0.8rem', flexShrink: 0 }}>
+            {(user?.name || user?.email || '?')[0].toUpperCase()}
+          </Avatar>
+          <Box sx={{ minWidth: 0 }}>
+            <Typography variant="body2" fontWeight={600} noWrap>
+              {user?.name || 'Account'}
+            </Typography>
+            <Typography variant="caption" sx={{ color: 'text.secondary' }} noWrap>
+              {user?.email}
+            </Typography>
+          </Box>
         </Box>
-        <Tooltip title="Change password">
-          <IconButton size="small" onClick={() => setPwOpen(true)} sx={{ color: 'text.secondary' }}>
-            <LockOutlinedIcon sx={{ fontSize: 16 }} />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Sign out">
-          <IconButton size="small" onClick={handleLogout} sx={{ color: 'text.secondary' }}>
-            <LogoutIcon sx={{ fontSize: 18 }} />
-          </IconButton>
-        </Tooltip>
+
+        {/* Action buttons row */}
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Tooltip title="Change password">
+            <IconButton size="small" onClick={() => setPwOpen(true)} sx={{ color: 'text.secondary', border: '1px solid', borderColor: 'divider', borderRadius: 1.5 }}>
+              <LockOutlinedIcon sx={{ fontSize: 15 }} />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Sign out">
+            <IconButton size="small" onClick={handleLogout} sx={{ color: 'text.secondary', border: '1px solid', borderColor: 'divider', borderRadius: 1.5 }}>
+              <LogoutIcon sx={{ fontSize: 15 }} />
+            </IconButton>
+          </Tooltip>
+        </Box>
       </Box>
 
       <ChangePasswordDialog open={pwOpen} onClose={() => setPwOpen(false)} />
