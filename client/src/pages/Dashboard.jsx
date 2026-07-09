@@ -103,8 +103,10 @@ export default function Dashboard() {
           fullWidth
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          InputProps={{
-            startAdornment: <InputAdornment position="start"><SearchIcon sx={{ fontSize: 18 }} /></InputAdornment>,
+          slotProps={{
+            input: {
+              startAdornment: <InputAdornment position="start"><SearchIcon sx={{ fontSize: 18 }} /></InputAdornment>,
+            },
           }}
         />
       </Paper>

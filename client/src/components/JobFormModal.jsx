@@ -160,7 +160,7 @@ export default function JobFormModal({ open, onClose, onSaved, job }) {
               fullWidth
               value={form.salaryMin}
               onChange={set('salaryMin')}
-              InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }}
+              slotProps={{ input: { startAdornment: <InputAdornment position="start">$</InputAdornment> } }}
             />
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
@@ -170,7 +170,7 @@ export default function JobFormModal({ open, onClose, onSaved, job }) {
               fullWidth
               value={form.salaryMax}
               onChange={set('salaryMax')}
-              InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }}
+              slotProps={{ input: { startAdornment: <InputAdornment position="start">$</InputAdornment> } }}
             />
           </Grid>
 
