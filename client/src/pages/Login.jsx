@@ -9,6 +9,7 @@ import Alert from '@mui/material/Alert';
 import Link from '@mui/material/Link';
 import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import PasswordField from '../components/PasswordField';
 
 export default function Login() {
   const { login } = useAuth();
@@ -65,14 +66,22 @@ export default function Login() {
             value={form.email}
             onChange={set('email')}
           />
-          <TextField
+          <PasswordField
             label="Password"
-            type="password"
             fullWidth
             required
             value={form.password}
             onChange={set('password')}
           />
+          <Link
+            component={RouterLink}
+            to="/forgot-password"
+            underline="hover"
+            variant="body2"
+            sx={{ alignSelf: 'flex-end', color: 'text.secondary', mt: -1 }}
+          >
+            Forgot password?
+          </Link>
           <Button
             type="submit"
             variant="contained"

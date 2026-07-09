@@ -17,7 +17,6 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 import Alert from '@mui/material/Alert';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
@@ -34,6 +33,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 import { useAuth } from '../context/AuthContext';
 import { changePassword } from '../api/auth';
+import PasswordField from './PasswordField';
 
 const DRAWER_WIDTH = 220;
 
@@ -82,25 +82,22 @@ function ChangePasswordDialog({ open, onClose }) {
       <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: '16px !important' }}>
         {error && <Alert severity="error">{error}</Alert>}
         {success && <Alert severity="success">Password changed successfully!</Alert>}
-        <TextField
+        <PasswordField
           label="Current Password"
-          type="password"
           fullWidth
           value={form.current}
           onChange={set('current')}
           disabled={success}
         />
-        <TextField
+        <PasswordField
           label="New Password"
-          type="password"
           fullWidth
           value={form.next}
           onChange={set('next')}
           disabled={success}
         />
-        <TextField
+        <PasswordField
           label="Confirm New Password"
-          type="password"
           fullWidth
           value={form.confirm}
           onChange={set('confirm')}

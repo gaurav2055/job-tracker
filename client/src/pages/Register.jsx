@@ -9,6 +9,7 @@ import Alert from '@mui/material/Alert';
 import Link from '@mui/material/Link';
 import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import PasswordField from '../components/PasswordField';
 
 export default function Register() {
   const { login } = useAuth();
@@ -83,17 +84,15 @@ export default function Register() {
             value={form.email}
             onChange={set('email')}
           />
-          <TextField
+          <PasswordField
             label="Password"
-            type="password"
             fullWidth
             required
             value={form.password}
             onChange={set('password')}
           />
-          <TextField
+          <PasswordField
             label="Confirm Password"
-            type="password"
             fullWidth
             required
             value={form.confirm}
