@@ -16,8 +16,12 @@ const PORT = process.env.PORT || 3001;
 const ALLOWED_ORIGINS = (process.env.CORS_ORIGIN || 'http://localhost:5173').split(',');
 app.use(cors({
   origin: (origin, cb) => {
-    // Allow requests with no origin (curl, mobile apps) and listed origins
-    if (!origin || ALLOWED_ORIGINS.includes(origin)) return cb(null, true);
+    // Allow requests with no origin (curl, mobile apps), listed origins, and the browser
+    // extension (its origin is chrome-extension://<id> — the id varies per install/machine,
+    // and JWT bearer auth is the actual access boundary, not this check).
+    if (!origin || ALLOWED_ORIGINS.includes(origin) || origin.startsWith('chrome-extension://')) {
+      return cb(null, true);
+    }
     cb(new Error('Not allowed by CORS'));
   },
   credentials: true,
