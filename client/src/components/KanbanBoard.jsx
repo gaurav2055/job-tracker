@@ -22,10 +22,11 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import LaptopIcon from '@mui/icons-material/Laptop';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 import StatusBadge from './StatusBadge';
 import FitScoreBadge from './FitScoreBadge';
-import { updateJobStatus } from '../api/jobs';
+import { updateJobStatus, deleteJob } from '../api/jobs';
 import dayjs from 'dayjs';
 
 // ── Column definitions ────────────────────────────────────────────────────────
@@ -71,9 +72,14 @@ function formatSalary(min, max) {
 }
 
 // ── Mini job card (used both in column and drag overlay) ──────────────────────
-function JobMiniCard({ job, isDragging = false, dragListeners, dragRef, dragStyle }) {
+function JobMiniCard({ job, isDragging = false, dragListeners, dragRef, dragStyle, onDelete }) {
   const navigate = useNavigate();
   const salary = formatSalary(job.salaryMin, job.salaryMax);
+
+  function handleDeleteClick(e) {
+    e.stopPropagation();
+    onDelete(job);
+  }
 
   return (
     <Paper
@@ -81,6 +87,7 @@ function JobMiniCard({ job, isDragging = false, dragListeners, dragRef, dragStyl
       elevation={isDragging ? 8 : 0}
       onClick={() => !isDragging && navigate(`/jobs/${job.id}`)}
       sx={{
+        position: 'relative',
         p: 1.5,
         mb: 1,
         cursor: isDragging ? 'grabbing' : 'pointer',
@@ -89,6 +96,7 @@ function JobMiniCard({ job, isDragging = false, dragListeners, dragRef, dragStyl
         transition: isDragging ? undefined : 'box-shadow 0.15s',
         userSelect: 'none',
         '&:hover': { boxShadow: '0 4px 16px rgba(0,0,0,0.3)' },
+        '&:hover .kanban-delete-btn': { opacity: 1 },
         bgcolor: 'background.paper',
       }}
       {...(dragListeners || {})}
@@ -102,7 +110,26 @@ function JobMiniCard({ job, isDragging = false, dragListeners, dragRef, dragStyl
             {job.roleTitle}
           </Typography>
         </Box>
-        <FitScoreBadge score={job.fitScore} />
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.25, flexShrink: 0 }}>
+          {!isDragging && onDelete && (
+            <IconButton
+              className="kanban-delete-btn"
+              size="small"
+              onClick={handleDeleteClick}
+              onPointerDown={(e) => e.stopPropagation()}
+              sx={{
+                p: 0.25,
+                opacity: 0,
+                transition: 'opacity 0.15s, color 0.15s',
+                color: 'text.secondary',
+                '&:hover': { color: 'error.main' },
+              }}
+            >
+              <DeleteIcon sx={{ fontSize: 15 }} />
+            </IconButton>
+          )}
+          <FitScoreBadge score={job.fitScore} />
+        </Box>
       </Box>
 
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
@@ -136,7 +163,7 @@ function JobMiniCard({ job, isDragging = false, dragListeners, dragRef, dragStyl
 }
 
 // ── Draggable card wrapper ────────────────────────────────────────────────────
-function DraggableCard({ job }) {
+function DraggableCard({ job, onDelete }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: job.id });
 
   return (
@@ -146,13 +173,13 @@ function DraggableCard({ job }) {
       {...listeners}
       sx={{ opacity: isDragging ? 0.35 : 1, touchAction: 'none' }}
     >
-      <JobMiniCard job={job} />
+      <JobMiniCard job={job} onDelete={onDelete} />
     </Box>
   );
 }
 
 // ── Droppable column ──────────────────────────────────────────────────────────
-function KanbanColumn({ status, color, tooltip, jobs }) {
+function KanbanColumn({ status, color, tooltip, jobs, onDelete }) {
   const { setNodeRef, isOver } = useDroppable({ id: status });
 
   return (
@@ -205,7 +232,7 @@ function KanbanColumn({ status, color, tooltip, jobs }) {
             Drop here
           </Typography>
         ) : (
-          jobs.map((job) => <DraggableCard key={job.id} job={job} />)
+          jobs.map((job) => <DraggableCard key={job.id} job={job} onDelete={onDelete} />)
         )}
       </Box>
     </Box>
@@ -213,7 +240,7 @@ function KanbanColumn({ status, color, tooltip, jobs }) {
 }
 
 // ── Main Kanban board ─────────────────────────────────────────────────────────
-export default function KanbanBoard({ jobs, onStatusChange }) {
+export default function KanbanBoard({ jobs, onStatusChange, onJobDeleted }) {
   const [activeJob, setActiveJob] = useState(null);
 
   const sensors = useSensors(
@@ -244,6 +271,16 @@ export default function KanbanBoard({ jobs, onStatusChange }) {
     }
   }
 
+  async function handleDeleteJob(job) {
+    if (!window.confirm(`Delete "${job.roleTitle}" at ${job.company?.name}? This cannot be undone.`)) return;
+    try {
+      await deleteJob(job.id);
+      onJobDeleted(job.id);
+    } catch {
+      // silently fail — board stays in current state
+    }
+  }
+
   const jobsByStatus = (status) => jobs.filter((j) => j.status === status);
 
   return (
@@ -261,6 +298,7 @@ export default function KanbanBoard({ jobs, onStatusChange }) {
             color={col.color}
             tooltip={col.tooltip}
             jobs={jobsByStatus(col.status)}
+            onDelete={handleDeleteJob}
           />
         ))}
       </Box>

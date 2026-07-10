@@ -64,6 +64,12 @@ export default function Dashboard() {
     setJobs((prev) => prev.map((j) => j.id === jobId ? { ...j, status: newStatus } : j));
   }
 
+  // Job is deleted (with confirm) inside KanbanBoard; just sync local state here
+  function handleJobDeleted(jobId) {
+    setJobs((prev) => prev.filter((j) => j.id !== jobId));
+    getDashboardStats().then((res) => setStats(res.data));
+  }
+
   return (
     <Box>
       {/* Header */}
@@ -119,7 +125,7 @@ export default function Dashboard() {
           ))}
         </Box>
       ) : (
-        <KanbanBoard jobs={jobs} onStatusChange={handleStatusChange} />
+        <KanbanBoard jobs={jobs} onStatusChange={handleStatusChange} onJobDeleted={handleJobDeleted} />
       )}
 
       <JobFormModal open={addOpen} onClose={() => setAddOpen(false)} onSaved={handleJobSaved} />
